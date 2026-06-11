@@ -10,7 +10,7 @@ City name podu, current temperature + condition instant ah kaatum.
 - **Fast Loading** - `Loading...` text only 😎
 
 ## 🚀 Live Demo
-👉 https://subha445.github.io/weather-app
+👉 https://subha445.github.io/Weather---App
 
 ## 🛠️ Tech Stack
 `HTML5` `CSS3` `JavaScript` `wttr.in API`
