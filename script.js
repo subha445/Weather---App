@@ -12,7 +12,7 @@ async function getWeather() {
         return;
     }
 
-    resultDiv.innerHTML = "<p>⏳ Loading da machan...</p>";
+    resultDiv.innerHTML = "<p>⏳ Loading...</p>";
 
     try {
         const url = `https://wttr.in/${city}?format=j1`;
