@@ -1,21 +1,404 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title> Weather App</title>
-    <style>
-        body { font-family: Arial; text-align: center; padding: 50px; background: #f0f8ff; }
-        input { padding: 10px; width: 200px; }
-        button { padding: 10px 20px; background: #4CAF50; color: white; border: none; cursor: pointer; }
-        #weather-result { margin-top: 30px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Weather | Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #080710;
+    color: white;
+    min-height: 100vh;
+    padding: 25px 15px;
+}
+
+.container {
+    max-width: 850px;
+    margin: 20px auto;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+header h1 {
+    color: #bd91ff;
+    font-size: 30px;
+    text-shadow: 0 0 15px #813cff;
+}
+
+header p {
+    color: #9e95b1;
+    font-size: 13px;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid #6742a5;
+    border-radius: 10px;
+    background: #191526;
+    color: white;
+    outline: none;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #bd91ff;
+    box-shadow: 0 0 12px #713cff;
+}
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 16px;
+    background: #813cff;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(.96);
+}
+
+.location-btn {
+    width: 100%;
+    background: #211735;
+    border: 1px solid #6742a5;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: linear-gradient(145deg, #191329, #100e1b);
+    border: 1px solid #503078;
+    border-radius: 17px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 0 18px rgba(129,60,255,.12);
+}
+
+.current {
+    text-align: center;
+}
+
+.city {
+    color: #c5a3ff;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.date {
+    color: #938aa5;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.weather-icon {
+    font-size: 65px;
+    margin: 15px 0 0;
+}
+
+.temperature {
+    font-size: 55px;
+    font-weight: 700;
+    color: white;
+}
+
+.condition {
+    color: #c5a3ff;
+    font-size: 17px;
+}
+
+.feels {
+    color: #aaa0bb;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.section-title {
+    color: #c49aff;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.details {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.detail {
+    background: #211a32;
+    padding: 16px;
+    border-radius: 11px;
+    border: 1px solid #3d2b59;
+}
+
+.detail p {
+    color: #9d91b2;
+    font-size: 12px;
+}
+
+.detail h3 {
+    color: #e2d4ff;
+    font-size: 18px;
+    margin-top: 6px;
+}
+
+.forecast {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.forecast-item {
+    background: #211a32;
+    padding: 13px 5px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid #3d2b59;
+}
+
+.forecast-item p {
+    font-size: 11px;
+    color: #aaa0bb;
+}
+
+.forecast-item h3 {
+    font-size: 15px;
+    margin: 7px 0;
+}
+
+.forecast-item span {
+    font-size: 25px;
+}
+
+.daily {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.day-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #211a32;
+    padding: 12px;
+    border-radius: 9px;
+    font-size: 13px;
+}
+
+.day-row .day-icon {
+    font-size: 22px;
+}
+
+.day-row .day-name {
+    flex: 1;
+    margin-left: 12px;
+}
+
+.day-row .temps {
+    color: #c49aff;
+}
+
+.sun-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.sun {
+    background: #211a32;
+    border: 1px solid #3d2b59;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+}
+
+.sun p {
+    color: #aaa0bb;
+    font-size: 12px;
+}
+
+.sun h3 {
+    color: #d9c5ff;
+    margin-top: 5px;
+}
+
+.recent {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.recent button {
+    background: #251a39;
+    border: 1px solid #65429a;
+    font-size: 12px;
+}
+
+#status {
+    text-align: center;
+    color: #c49aff;
+    font-size: 13px;
+    margin: 15px 0;
+}
+
+.hidden {
+    display: none;
+}
+
+footer {
+    text-align: center;
+    color: #746b86;
+    font-size: 11px;
+    padding: 15px;
+}
+
+@media(max-width: 500px) {
+    .forecast {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    header h1 {
+        font-size: 25px;
+    }
+
+    .temperature {
+        font-size: 48px;
+    }
+
+    .card {
+        padding: 17px;
+    }
+}
+</style>
 </head>
+
 <body>
-    <h1>🌦️ WEATHER APP 🌦️</h1>
-    <p> Portfolio Project 2</p>
-    <input type="text" placeholder="City name type pannu da">
-    <button>Check</button>
-    <div id="weather-result"></div>
-    
-    <script src="script.js"></script>
+
+<div class="container">
+
+<header>
+    <h1>⚡ NEON WEATHER</h1>
+    <p>Your Personal Weather Dashboard</p>
+</header>
+
+<div class="search-box">
+    <input id="cityInput" type="text"
+    placeholder="Search city...">
+    <button onclick="searchWeather()">Search</button>
+</div>
+
+<button class="location-btn" onclick="useLocation()">
+    📍 Use My Current Location
+</button>
+
+<p id="status">Search for a city to see its weather ✨</p>
+
+<div id="weatherContent" class="hidden">
+
+    <div class="card current">
+        <div class="city" id="cityName">City</div>
+        <div class="date" id="todayDate"></div>
+
+        <div class="weather-icon" id="weatherIcon">☀️</div>
+
+        <div class="temperature">
+            <span id="temperature">--</span>°
+        </div>
+
+        <div class="condition" id="condition">Weather</div>
+        <div class="feels">
+            Feels like <span id="feels">--</span>°C
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">✦ Weather Details</h2>
+
+        <div class="details">
+            <div class="detail">
+                <p>💧 Humidity</p>
+                <h3 id="humidity">--%</h3>
+            </div>
+
+            <div class="detail">
+                <p>💨 Wind Speed</p>
+                <h3 id="wind">-- km/h</h3>
+            </div>
+
+            <div class="detail">
+                <p>🌡️ Pressure</p>
+                <h3 id="pressure">-- hPa</h3>
+            </div>
+
+            <div class="detail">
+                <p>☁️ Cloud Cover</p>
+                <h3 id="cloud">--%</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">⏰ Hourly Forecast</h2>
+        <div class="forecast" id="hourly"></div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">📅 7-Day Forecast</h2>
+        <div class="daily" id="daily"></div>
+    </div>
+
+    <div class="card">
+        <h2 class="section-title">🌅 Sun Schedule</h2>
+
+        <div class="sun-info">
+            <div class="sun">
+                <p>🌄 Sunrise</p>
+                <h3 id="sunrise">--</h3>
+            </div>
+
+            <div class="sun">
+                <p>🌇 Sunset</p>
+                <h3 id="sunset">--</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card">
+    <h2 class="section-title">🕘 Recent Searches</h2>
+    <div class="recent" id="recent"></div>
+</div>
+
+<footer>Designed with 💜 | NEON WEATHER</footer>
+
+</div>
+
+<script src="script.js"></script>
 </body>
-</html>
+    </html>
+    
