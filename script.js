@@ -1,28 +1,64 @@
-document.getElementById("status").textContent =
-    "✅ JavaScript Connected!";
-// =============================================
-// ⚡ NEON WEATHER - COMPLETE ADVANCED VERSION
-// API: Open-Meteo | No API Key Required
-// =============================================
+
+/* =========================================
+   ⚡ NEON WEATHER - COMPLETE WEATHER APP
+   API: OPEN-METEO
+   ========================================= */
 
 let weatherData = null;
 let currentCity = "";
 let isCelsius = true;
 let isLightMode = false;
 
-// =============================================
+// =========================================
 // 1. HTML ELEMENTS
-// =============================================
+// =========================================
 
 const cityInput = document.getElementById("cityInput");
 const statusText = document.getElementById("status");
 const weatherContent = document.getElementById("weatherContent");
 
-// =============================================
-// 2. EXTRA FEATURES - ADD BUTTONS
-// =============================================
+// =========================================
+// 2. WEATHER ICONS
+// =========================================
+
+function getWeatherInfo(code, isDay = 1) {
+
+    const icons = {
+        0: ["Clear Sky", isDay ? "☀️" : "🌙"],
+        1: ["Mainly Clear", "🌤️"],
+        2: ["Partly Cloudy", "⛅"],
+        3: ["Cloudy", "☁️"],
+        45: ["Foggy", "🌫️"],
+        48: ["Foggy", "🌫️"],
+        51: ["Light Drizzle", "🌦️"],
+        53: ["Drizzle", "🌦️"],
+        55: ["Heavy Drizzle", "🌧️"],
+        61: ["Light Rain", "🌦️"],
+        63: ["Moderate Rain", "🌧️"],
+        65: ["Heavy Rain", "🌧️"],
+        71: ["Light Snow", "🌨️"],
+        73: ["Snow", "❄️"],
+        75: ["Heavy Snow", "❄️"],
+        80: ["Rain Showers", "🌦️"],
+        81: ["Heavy Showers", "🌧️"],
+        82: ["Violent Showers", "⛈️"],
+        85: ["Snow Showers", "🌨️"],
+        86: ["Heavy Snow", "❄️"],
+        95: ["Thunderstorm", "⛈️"],
+        96: ["Thunderstorm with Hail", "⛈️"],
+        99: ["Heavy Thunderstorm", "⛈️"]
+    };
+
+    return icons[code] || ["Unknown Weather", "🌡️"];
+}
+
+// =========================================
+// 3. EXTRA BUTTONS
+// =========================================
 
 function createControls() {
+
+    if (document.getElementById("extraControls")) return;
 
     const controls = document.createElement("div");
 
@@ -35,88 +71,37 @@ function createControls() {
             flex-wrap:wrap;
             margin:15px 0;
         ">
-            <button onclick="toggleUnit()" id="unitBtn">
-                °C / °F
-            </button>
 
-            <button onclick="toggleTheme()" id="themeBtn">
-                ☀️ Light Mode
-            </button>
+            <button id="unitBtn">°C / °F</button>
 
-            <button onclick="refreshWeather()">
-                🔄 Refresh
-            </button>
+            <button id="themeBtn">☀️ Light Mode</button>
 
-            <button onclick="saveFavorite()">
-                ⭐ Favourite
-            </button>
+            <button id="refreshBtn">🔄 Refresh</button>
+
+            <button id="favoriteBtn">⭐ Favourite</button>
+
         </div>
     `;
 
-    statusText.insertAdjacentElement("afterend", controls);
-}
+    statusText.after(controls);
 
-// =============================================
-// 3. WEATHER CODE TO ICON AND DESCRIPTION
-// =============================================
+    document.getElementById("unitBtn")
+        .addEventListener("click", toggleUnit);
 
-function getWeatherInfo(code, isDay = 1) {
+    document.getElementById("themeBtn")
+        .addEventListener("click", toggleTheme);
 
-    const weatherCodes = {
+    document.getElementById("refreshBtn")
+        .addEventListener("click", refreshWeather);
 
-        0: ["Clear Sky", isDay ? "☀️" : "🌙"],
-        1: ["Mainly Clear", isDay ? "🌤️" : "🌙"],
-        2: ["Partly Cloudy", "⛅"],
-        3: ["Overcast", "☁️"],
-        45: ["Fog", "🌫️"],
-        48: ["Depositing Rime Fog", "🌫️"],
-        51: ["Light Drizzle", "🌦️"],
-        53: ["Moderate Drizzle", "🌦️"],
-        55: ["Dense Drizzle", "🌧️"],
-        56: ["Freezing Drizzle", "🌧️"],
-        57: ["Heavy Freezing Drizzle", "🌧️"],
-        61: ["Slight Rain", "🌦️"],
-        63: ["Moderate Rain", "🌧️"],
-        65: ["Heavy Rain", "🌧️"],
-        66: ["Freezing Rain", "🌧️"],
-        67: ["Heavy Freezing Rain", "🌧️"],
-        71: ["Slight Snow", "🌨️"],
-        73: ["Moderate Snow", "❄️"],
-        75: ["Heavy Snow", "❄️"],
-        77: ["Snow Grains", "❄️"],
-        80: ["Rain Showers", "🌦️"],
-        81: ["Moderate Showers", "🌧️"],
-        82: ["Violent Showers", "⛈️"],
-        85: ["Snow Showers", "🌨️"],
-        86: ["Heavy Snow Showers", "❄️"],
-        95: ["Thunderstorm", "⛈️"],
-        96: ["Thunderstorm with Hail", "⛈️"],
-        99: ["Heavy Thunderstorm", "⛈️"]
-
-    };
-
-    return weatherCodes[code] || ["Unknown", "🌡️"];
-}
-
-// =============================================
-// 4. SAFE TEXT HELPER
-// =============================================
-
-function safeText(value) {
-
-    return String(value ?? "").replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-    })[char]);
+    document.getElementById("favoriteBtn")
+        .addEventListener("click", saveFavorite);
 
 }
 
-// =============================================
-// 5. CITY SEARCH
-// =============================================
+// =========================================
+// 4. SEARCH CITY
+// =========================================
 
 async function searchWeather() {
 
@@ -127,7 +112,7 @@ async function searchWeather() {
         return;
     }
 
-    showStatus("⏳ Searching city...");
+    showStatus("⏳ Searching for " + city + "...");
 
     try {
 
@@ -137,7 +122,7 @@ async function searchWeather() {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("Unable to search city.");
+            throw new Error("City search failed!");
         }
 
         const data = await response.json();
@@ -167,13 +152,13 @@ async function searchWeather() {
     }
 }
 
-// =============================================
-// 6. FETCH WEATHER DATA
-// =============================================
+// =========================================
+// 5. LOAD WEATHER DATA
+// =========================================
 
 async function loadWeather(lat, lon, cityName) {
 
-    showStatus("⏳ Loading live weather...");
+    showStatus("⏳ Loading weather data...");
 
     try {
 
@@ -216,13 +201,13 @@ async function loadWeather(lat, lon, cityName) {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error("Weather service unavailable.");
+            throw new Error("Weather service unavailable!");
         }
 
         const data = await response.json();
 
         if (!data.current || !data.daily || !data.hourly) {
-            throw new Error("Weather information unavailable.");
+            throw new Error("Weather data unavailable!");
         }
 
         weatherData = data;
@@ -239,27 +224,19 @@ async function loadWeather(lat, lon, cityName) {
         showStatus("❌ " + error.message);
 
     }
-
 }
 
-// =============================================
-// 7. DISPLAY CURRENT WEATHER
-// =============================================
+// =========================================
+// 6. DISPLAY CURRENT WEATHER
+// =========================================
 
 function displayWeather() {
 
     if (!weatherData) return;
 
-    const current = weatherData.current;
+    const c = weatherData.current;
 
-    const temp = convertTemperature(current.temperature_2m);
-
-    const feels = convertTemperature(current.apparent_temperature);
-
-    const info = getWeatherInfo(
-        current.weather_code,
-        current.is_day
-    );
+    const info = getWeatherInfo(c.weather_code, c.is_day);
 
     weatherContent.classList.remove("hidden");
 
@@ -275,96 +252,67 @@ function displayWeather() {
 
     document.getElementById("weatherIcon").textContent = info[1];
 
-    document.getElementById("temperature").textContent = temp;
-
-    document.querySelector(".feels").innerHTML =
-        `Feels like <span id="feels">${feels}</span>°${isCelsius ? "C" : "F"}`;
+    document.getElementById("temperature").textContent =
+        convertTemp(c.temperature_2m);
 
     document.getElementById("condition").textContent = info[0];
 
-    document.getElementById("humidity").textContent =
-        current.relative_humidity_2m + "%";
+    document.querySelector(".feels").textContent =
+        `Feels like ${convertTemp(c.apparent_temperature)}°${isCelsius ? "C" : "F"}`;
 
-    document.getElementById("wind").textContent =
-        current.wind_speed_10m + " km/h";
-
-    document.getElementById("pressure").textContent =
-        current.pressure_msl + " hPa";
-
-    document.getElementById("cloud").textContent =
-        current.cloud_cover + "%";
-
-    // Additional weather details
-
-    const details = document.querySelector(".details");
-
-    details.innerHTML = `
-        <div class="detail">
-            <p>💧 Humidity</p>
-            <h3>${current.relative_humidity_2m}%</h3>
-        </div>
-
-        <div class="detail">
-            <p>💨 Wind Speed</p>
-            <h3>${current.wind_speed_10m} km/h</h3>
-        </div>
-
-        <div class="detail">
-            <p>🌡️ Pressure</p>
-            <h3>${current.pressure_msl} hPa</h3>
-        </div>
-
-        <div class="detail">
-            <p>☁️ Cloud Cover</p>
-            <h3>${current.cloud_cover}%</h3>
-        </div>
-
-        <div class="detail">
-            <p>☀️ UV Index</p>
-            <h3>${current.uv_index ?? "--"}</h3>
-        </div>
-
-        <div class="detail">
-            <p>👁️ Visibility</p>
-            <h3>${current.visibility != null
-                ? (current.visibility / 1000).toFixed(1) + " km"
-                : "--"}</h3>
-        </div>
-
-        <div class="detail">
-            <p>🌧️ Precipitation</p>
-            <h3>${current.precipitation} mm</h3>
-        </div>
-
-        <div class="detail">
-            <p>🧭 Wind Direction</p>
-            <h3>${getWindDirection(current.wind_direction_10m)}</h3>
-        </div>
-    `;
-
+    displayDetails();
     displayHourly();
     displayDaily();
     displaySun();
 
 }
 
-// =============================================
-// 8. TEMPERATURE CONVERSION
-// =============================================
+// =========================================
+// 7. WEATHER DETAILS
+// =========================================
 
-function convertTemperature(temp) {
+function displayDetails() {
 
-    if (isCelsius) {
-        return Math.round(temp);
-    }
+    const c = weatherData.current;
 
-    return Math.round((temp * 9 / 5) + 32);
+    const details = [
+        ["💧 Humidity", c.relative_humidity_2m + "%"],
+        ["💨 Wind Speed", c.wind_speed_10m + " km/h"],
+        ["🌡️ Pressure", c.pressure_msl + " hPa"],
+        ["☁️ Cloud Cover", c.cloud_cover + "%"],
+        ["☀️ UV Index", c.uv_index ?? "--"],
+        ["👁️ Visibility", c.visibility != null
+            ? (c.visibility / 1000).toFixed(1) + " km"
+            : "--"],
+        ["🌧️ Precipitation", c.precipitation + " mm"],
+        ["🧭 Wind Direction", getWindDirection(c.wind_direction_10m)]
+    ];
+
+    document.querySelector(".details").innerHTML =
+        details.map(item => `
+            <div class="detail">
+                <p>${item[0]}</p>
+                <h3>${item[1]}</h3>
+            </div>
+        `).join("");
 
 }
 
-// =============================================
-// 9. °C / °F TOGGLE
-// =============================================
+// =========================================
+// 8. TEMPERATURE CONVERTER
+// =========================================
+
+function convertTemp(temp) {
+
+    return isCelsius
+        ? Math.round(temp)
+        : Math.round(temp * 9 / 5 + 32);
+
+}
+
+// =========================================
+// 9. TEMPERATURE TOGGLE
+// =========================================
 
 function toggleUnit() {
 
@@ -379,51 +327,43 @@ function toggleUnit() {
 
 }
 
-// =============================================
+// =========================================
 // 10. HOURLY FORECAST
-// =============================================
+// =========================================
 
 function displayHourly() {
 
-    const hourly = weatherData.hourly;
+    const h = weatherData.hourly;
 
     const container = document.getElementById("hourly");
 
-    const now = new Date(weatherData.current.time)
-        .getTime();
+    const now = weatherData.current.time;
 
-    const startIndex = hourly.time.findIndex(time =>
-        new Date(time).getTime() >= now
-    );
+    let start = h.time.findIndex(time => time >= now);
 
-    const start = Math.max(0, startIndex);
+    if (start === -1) start = 0;
 
-    const hours = hourly.time.slice(start, start + 8);
+    const hours = h.time.slice(start, start + 8);
 
     container.innerHTML = hours.map((time, index) => {
 
         const i = start + index;
 
-        const info = getWeatherInfo(hourly.weather_code[i]);
+        const info = getWeatherInfo(h.weather_code[i]);
 
-        const hour = new Date(time).toLocaleTimeString(
-            "en-IN",
-            {
-                hour: "numeric",
-                hour12: true
-            }
-        );
-
-        const temp = convertTemperature(
-            hourly.temperature_2m[i]
-        );
+        const hour = time.substring(11, 16);
 
         return `
             <div class="forecast-item">
+
                 <p>${hour}</p>
+
                 <span>${info[1]}</span>
-                <h3>${temp}°${isCelsius ? "C" : "F"}</h3>
-                <p>🌧️ ${hourly.precipitation_probability[i] ?? 0}%</p>
+
+                <h3>${convertTemp(h.temperature_2m[i])}°${isCelsius ? "C" : "F"}</h3>
+
+                <p>🌧️ ${h.precipitation_probability[i] ?? 0}%</p>
+
             </div>
         `;
 
@@ -431,34 +371,30 @@ function displayHourly() {
 
 }
 
-// =============================================
-// 11. 7-DAY FORECAST
-// =============================================
+// =========================================
+// 11. 7 DAY FORECAST
+// =========================================
 
 function displayDaily() {
 
-    const daily = weatherData.daily;
+    const d = weatherData.daily;
 
     const container = document.getElementById("daily");
 
-    container.innerHTML = daily.time.map((date, index) => {
+    container.innerHTML = d.time.map((date, i) => {
 
-        const info = getWeatherInfo(daily.weather_code[index]);
+        const info = getWeatherInfo(d.weather_code[i]);
 
         const day = new Date(date + "T12:00:00")
             .toLocaleDateString("en-IN", {
                 weekday: "long"
             });
 
-        const max = convertTemperature(
-            daily.temperature_2m_max[index]
-        );
+        const max = convertTemp(d.temperature_2m_max[i]);
 
-        const min = convertTemperature(
-            daily.temperature_2m_min[index]
-        );
+        const min = convertTemp(d.temperature_2m_min[i]);
 
-        const rain = daily.precipitation_probability_max[index];
+        const rain = d.precipitation_probability_max[i] ?? 0;
 
         return `
             <div class="day-row">
@@ -471,9 +407,7 @@ function displayDaily() {
                     ${max}° / ${min}° ${isCelsius ? "C" : "F"}
                 </span>
 
-                <span style="margin-left:8px">
-                    💧 ${rain ?? 0}%
-                </span>
+                <span>💧 ${rain}%</span>
 
             </div>
         `;
@@ -482,38 +416,43 @@ function displayDaily() {
 
 }
 
-// =============================================
+// =========================================
 // 12. SUNRISE AND SUNSET
-// =============================================
+// =========================================
 
 function displaySun() {
 
-    const daily = weatherData.daily;
+    const d = weatherData.daily;
 
     document.getElementById("sunrise").textContent =
-        formatTime(daily.sunrise[0]);
+        formatTime(d.sunrise[0]);
 
     document.getElementById("sunset").textContent =
-        formatTime(daily.sunset[0]);
+        formatTime(d.sunset[0]);
 
 }
 
-function formatTime(date) {
+function formatTime(value) {
 
-    return new Date(date).toLocaleTimeString(
-        "en-IN",
-        {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true
-        }
-    );
+    const time = value.substring(11, 16);
+
+    const [hour, minute] = time.split(":");
+
+    const date = new Date();
+
+    date.setHours(Number(hour), Number(minute));
+
+    return date.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true
+    });
 
 }
 
-// =============================================
+// =========================================
 // 13. WIND DIRECTION
-// =============================================
+// =========================================
 
 function getWindDirection(degree) {
 
@@ -528,15 +467,15 @@ function getWindDirection(degree) {
 
 }
 
-// =============================================
-// 14. CURRENT LOCATION
-// =============================================
+// =========================================
+// 14. MY CURRENT LOCATION
+// =========================================
 
 function useLocation() {
 
     if (!navigator.geolocation) {
 
-        showStatus("❌ Location is not supported!");
+        showStatus("❌ Location not supported!");
 
         return;
     }
@@ -547,36 +486,68 @@ function useLocation() {
 
         position => {
 
-            const lat = position.coords.latitude;
-
-            const lon = position.coords.longitude;
-
-            loadWeather(lat, lon, "My Location");
+            loadWeather(
+                position.coords.latitude,
+                position.coords.longitude,
+                "My Location"
+            );
 
         },
 
         error => {
 
-            if (error.code === 1) {
-                showStatus("❌ Please allow location permission.");
-            } else {
-                showStatus("❌ Unable to get your location.");
-            }
+            showStatus(
+                error.code === 1
+                    ? "❌ Please allow location permission."
+                    : "❌ Unable to get location."
+            );
 
         },
 
         {
-            enableHighAccuracy: true,
-            timeout: 10000
+            enableHighAccuracy: false,
+            timeout: 15000
         }
 
     );
 
 }
 
-// =============================================
+// =========================================
 // 15. RECENT SEARCHES
-// =============================================
+// =========================================
+
+function getStored(key) {
+
+    try {
+
+        const data = JSON.parse(
+            localStorage.getItem(key) || "[]"
+        );
+
+        return Array.isArray(data) ? data : [];
+
+    } catch {
+
+        return [];
+
+    }
+
+}
+
+function setStored(key, value) {
+
+    try {
+
+        localStorage.setItem(key, JSON.stringify(value));
+
+    } catch (error) {
+
+        console.log("Storage unavailable", error);
+
+    }
+
+}
 
 function saveRecent(city) {
 
@@ -588,9 +559,7 @@ function saveRecent(city) {
 
     recent.unshift(city);
 
-    recent = recent.slice(0, 5);
-
-    setStored("neonRecent", recent);
+    setStored("neonRecent", recent.slice(0, 5));
 
     displayRecent();
 
@@ -602,33 +571,38 @@ function displayRecent() {
 
     const recent = getStored("neonRecent");
 
+    container.innerHTML = "";
+
     if (!recent.length) {
 
-        container.innerHTML = "<p>No recent searches yet.</p>";
+        container.textContent = "No recent searches yet.";
 
         return;
     }
 
-    container.innerHTML = recent.map(city => `
-        <button
-            onclick="searchSavedCity('${safeText(city).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}')">
-            ${safeText(city)}
-        </button>
-    `).join("");
+    recent.forEach(city => {
+
+        const btn = document.createElement("button");
+
+        btn.textContent = city;
+
+        btn.addEventListener("click", () => {
+
+            cityInput.value = city;
+
+            searchWeather();
+
+        });
+
+        container.appendChild(btn);
+
+    });
 
 }
 
-function searchSavedCity(city) {
-
-    cityInput.value = city;
-
-    searchWeather();
-
-}
-
-// =============================================
+// =========================================
 // 16. FAVOURITE CITIES
-// =============================================
+// =========================================
 
 function saveFavorite() {
 
@@ -666,41 +640,58 @@ function displayFavorites() {
 
     if (!container) {
 
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        card.innerHTML =
+            '<h2 class="section-title">⭐ Favourite Cities</h2>';
+
         container = document.createElement("div");
 
         container.id = "favorites";
         container.className = "recent";
 
-        const card = document.createElement("div");
-
-        card.className = "card";
-
-        card.innerHTML = `
-            <h2 class="section-title">⭐ Favourite Cities</h2>
-        `;
-
         card.appendChild(container);
 
-        document.querySelector("footer")
-            .before(card);
+        document.querySelector("footer").before(card);
 
     }
 
+    container.innerHTML = "";
+
     const favorites = getStored("neonFavorites");
 
-    container.innerHTML = favorites.length
-        ? favorites.map(city => `
-            <button onclick="searchSavedCity('${safeText(city).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}')">
-                ${safeText(city)}
-            </button>
-        `).join("")
-        : "<p>No favourite cities yet.</p>";
+    if (!favorites.length) {
+
+        container.textContent = "No favourite cities yet.";
+
+        return;
+    }
+
+    favorites.forEach(city => {
+
+        const btn = document.createElement("button");
+
+        btn.textContent = city;
+
+        btn.addEventListener("click", () => {
+
+            cityInput.value = city;
+
+            searchWeather();
+
+        });
+
+        container.appendChild(btn);
+
+    });
 
 }
 
-// =============================================
+// =========================================
 // 17. DARK / LIGHT MODE
-// =============================================
+// =========================================
 
 function toggleTheme() {
 
@@ -714,19 +705,23 @@ function toggleTheme() {
     document.getElementById("themeBtn").textContent =
         isLightMode ? "🌙 Dark Mode" : "☀️ Light Mode";
 
-    setStored("neonTheme", isLightMode ? "light" : "dark");
+    setStored(
+        "neonTheme",
+        isLightMode ? "light" : "dark"
+    );
 
 }
 
-// =============================================
-// 18. THEME STYLES
-// =============================================
+// =========================================
+// 18. THEME CSS
+// =========================================
 
 function addThemeStyles() {
 
     const style = document.createElement("style");
 
     style.textContent = `
+
         body.neon-light {
             background: #eee8ff;
             color: #25163c;
@@ -735,7 +730,6 @@ function addThemeStyles() {
         body.neon-light .card {
             background: linear-gradient(145deg,#ffffff,#eee5ff);
             border-color: #b99ae5;
-            box-shadow: 0 0 15px #c7b2ec;
         }
 
         body.neon-light .detail,
@@ -772,6 +766,11 @@ function addThemeStyles() {
             color: #45266d;
         }
 
+        #extraControls button {
+            flex: 1 1 120px;
+            min-height: 42px;
+        }
+
         button {
             transition: 0.2s ease;
         }
@@ -780,18 +779,15 @@ function addThemeStyles() {
             filter: brightness(1.15);
         }
 
-        .forecast-item img {
-            max-width: 100%;
-        }
     `;
 
     document.head.appendChild(style);
 
 }
 
-// =============================================
+// =========================================
 // 19. REFRESH WEATHER
-// =============================================
+// =========================================
 
 function refreshWeather() {
 
@@ -810,48 +806,9 @@ function refreshWeather() {
 
 }
 
-// =============================================
-// 20. LOCAL STORAGE HELPERS
-// =============================================
-
-function getStored(key) {
-
-    try {
-
-        const value = JSON.parse(
-            localStorage.getItem(key) || "[]"
-        );
-
-        return Array.isArray(value) ? value : [];
-
-    } catch {
-
-        return [];
-
-    }
-
-}
-
-function setStored(key, value) {
-
-    try {
-
-        localStorage.setItem(
-            key,
-            JSON.stringify(value)
-        );
-
-    } catch (error) {
-
-        console.warn("Storage unavailable:", error);
-
-    }
-
-}
-
-// =============================================
-// 21. STATUS MESSAGE
-// =============================================
+// =========================================
+// 20. STATUS MESSAGE
+// =========================================
 
 function showStatus(message) {
 
@@ -859,9 +816,9 @@ function showStatus(message) {
 
 }
 
-// =============================================
-// 22. ENTER KEY SEARCH
-// =============================================
+// =========================================
+// 21. ENTER KEY SEARCH
+// =========================================
 
 cityInput.addEventListener("keydown", event => {
 
@@ -873,9 +830,9 @@ cityInput.addEventListener("keydown", event => {
 
 });
 
-// =============================================
-// 23. START APP
-// =============================================
+// =========================================
+// 22. START APP
+// =========================================
 
 createControls();
 
@@ -885,8 +842,15 @@ displayRecent();
 
 displayFavorites();
 
-if (localStorage.getItem("neon
-// Make HTML onclick functions accessible
+// Restore saved theme
+
+if (localStorage.getItem("neonTheme") === "light") {
+
+    toggleTheme();
+
+}
+
+// Connect HTML onclick functions
 
 window.searchWeather = searchWeather;
 window.useLocation = useLocation;
@@ -894,8 +858,6 @@ window.toggleUnit = toggleUnit;
 window.toggleTheme = toggleTheme;
 window.refreshWeather = refreshWeather;
 window.saveFavorite = saveFavorite;
-window.searchSavedCity = searchSavedCity;
-document.querySelector(".search-box button")
-    .addEventListener("click", searchWeather);
 
-console.log("Weather App Connected!");
+console.log("⚡ NEON WEATHER CONNECTED SUCCESSFULLY!");
+        
