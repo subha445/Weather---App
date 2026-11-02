@@ -895,3 +895,7 @@ window.toggleTheme = toggleTheme;
 window.refreshWeather = refreshWeather;
 window.saveFavorite = saveFavorite;
 window.searchSavedCity = searchSavedCity;
+document.querySelector(".search-box button")
+    .addEventListener("click", searchWeather);
+
+console.log("Weather App Connected!");
