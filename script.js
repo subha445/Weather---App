@@ -1,4 +1,5 @@
-
+document.getElementById("status").textContent =
+    "✅ JavaScript Connected!";
 // =============================================
 // ⚡ NEON WEATHER - COMPLETE ADVANCED VERSION
 // API: Open-Meteo | No API Key Required
