@@ -885,3 +885,12 @@ displayRecent();
 displayFavorites();
 
 if (localStorage.getItem("neon
+// Make HTML onclick functions accessible
+
+window.searchWeather = searchWeather;
+window.useLocation = useLocation;
+window.toggleUnit = toggleUnit;
+window.toggleTheme = toggleTheme;
+window.refreshWeather = refreshWeather;
+window.saveFavorite = saveFavorite;
+window.searchSavedCity = searchSavedCity;
